@@ -23,6 +23,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
-          context: ./cloudflare-dns  # Path to the Dockerfile directory
+          context: ./cloudflare-dns
           push: true
           tags: ghcr.io/jas0n0ss/cloudflare-dns-manager:latest
+
