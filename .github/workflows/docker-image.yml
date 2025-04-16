@@ -25,4 +25,4 @@ jobs:
         with:
           context: ./cloudflare-dns  # Path to the Dockerfile directory
           push: true
-          tags: ghcr.io/Jas0n0ss/cloudflare-dns-manager:latest
+          tags: ghcr.io/jas0n0ss/cloudflare-dns-manager:latest
