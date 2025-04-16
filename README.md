@@ -2,7 +2,7 @@
 
 ### Deploy
 ```
-docker run -d \
+docker run -d -it\
     -p 8080:8080 \
     --name=cloudflare-dns \
     -e PUBLIC_IP_POLL_RATE_SEC=90 \
