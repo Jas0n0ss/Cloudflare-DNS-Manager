@@ -25,5 +25,5 @@ jobs:
         with:
           context: ./cloudflare-dns
           push: true
-          tags: ghcr.io/jas0n0ss/cloudflare-dns-manager:latest
+          tags: ghcr.io/jas0n0ss/cloudflare-dns-manager:worked
 
