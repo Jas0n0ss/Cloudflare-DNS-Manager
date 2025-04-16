@@ -17,7 +17,6 @@ jobs:
         uses: docker/login-action@v2
         with:
           username: jas0n0ss
-	#  username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}  # Uses GitHub token for authentication
 
       - name: Build and push Docker image
