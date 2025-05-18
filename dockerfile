@@ -1,30 +1,24 @@
-# Step 1: Build the React application
-FROM node:18-alpine as build
+# Pull base image.
+FROM node:18-alpine
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json to install dependencies
-COPY package*.json ./
+COPY package.json package.json
+COPY tsconfig.json tsconfig.json
+COPY index.ts index.ts
+COPY database database
+COPY dist dist
+COPY web-app/src/types.tsx web-app/src/types.tsx
 
-# Install the dependencies
+# install deps
 RUN npm install
+RUN npm install ts-node -g
 
-# Copy the entire project into the container
-COPY . .
+# Expose ports
+EXPOSE 8080
 
-# Build the React application for production
-RUN npm run build
+ENV PUBLIC_IP_POLL_RATE_SEC=90
 
-# Step 2: Set up Nginx to serve the built React application
-FROM nginx:alpine
+CMD [ "npm", "start" ]
 
-# Copy the build files from the previous image
-COPY --from=build /app/build /usr/share/nginx/html
-
-# Expose port 80 for accessing the application
-EXPOSE 80
-
-# Run Nginx in the foreground
-CMD ["nginx", "-g", "daemon off;"]
-
+VOLUME '/db'
