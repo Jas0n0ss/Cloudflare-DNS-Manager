@@ -1,24 +1,16 @@
 # Pull base image.
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package.json package.json
-COPY tsconfig.json tsconfig.json
-COPY index.ts index.ts
-COPY database database
-COPY dist dist
-COPY web-app/src/types.tsx web-app/src/types.tsx
+COPY package*.json ./
+RUN npm install --production
 
-# install deps
-RUN npm install
-RUN npm install ts-node -g
+COPY . .
 
 # Expose ports
 EXPOSE 8080
 
-ENV PUBLIC_IP_POLL_RATE_SEC=90
-
-CMD [ "npm", "start" ]
+CMD ["npm", "start"]
 
 VOLUME '/db'

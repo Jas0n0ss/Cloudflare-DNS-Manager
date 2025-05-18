@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  cloudflare-dns-manager:
+    build: .
+    container_name: cloudflare-dns-manager
+    ports:
+      - "8080:8080"
+    environment:
+      - PUBLIC_IP_POLL_RATE_SEC=90
+    volumes:
+      - ./db:/app/db
+    restart: unless-stopped
