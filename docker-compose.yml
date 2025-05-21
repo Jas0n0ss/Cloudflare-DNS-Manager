@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   cloudflare-dns-manager:
     image: ghcr.io/jas0n0ss/cloudflare-dns-manager:latest
@@ -10,9 +8,9 @@ services:
       - PUBLIC_IP_POLL_RATE_SEC=90
     volumes:
       - ./db:/app/db
-    restart: unless-stopped
+    restart: unless-stopped  # This ensures the container restarts unless manually stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]  # Using the root path (/) for health check
       interval: 30s
       timeout: 10s
       retries: 3
