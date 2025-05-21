@@ -1,21 +1,24 @@
-# Pull base image.
+# Use Node.js 20 Alpine as the base image
 FROM node:20-alpine
 
+# Set working directory
 WORKDIR /app
 
-# Copy package files and install dependencies
+# Install dependencies
 COPY package*.json ./
 RUN npm install
 
-# Copy the rest of the application
+# Copy application source
 COPY . .
 
-# Build the web application
+# Build the frontend
 RUN cd web-app && npm install && npm run build
 
-# Expose ports
+# Expose app port
 EXPOSE 8080
 
+# Start the application
 CMD ["npm", "start"]
 
+# Persistent data volume
 VOLUME '/db'
