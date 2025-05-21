@@ -38,5 +38,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ github.actor }}/cloudflare-dns-manager:latest
-            ghcr.io/${{ github.actor }}/cloudflare-dns-manager:latest
+            jas0n0ss/cloudflare-dns-manager:latest
+            ghcr.io/jas0n0ss/cloudflare-dns-manager:latest
