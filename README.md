@@ -40,16 +40,12 @@ docker run -d \
 
 1. **Build and start the service:**  
     ```bash
+    docker pull ghcr.io/jas0n0ss/cloudflare-dns-manager:latest
     docker-compose up -d
     ```
-
+    
 2. **Access the application:**  
    Open your browser and go to [http://localhost:8080](http://localhost:8080).
-
-3. **Stop the service:**  
-    ```bash
-    docker-compose down
-    ```
 
 > 💾 The database will be stored in the `db` folder in your project directory by default.
 
