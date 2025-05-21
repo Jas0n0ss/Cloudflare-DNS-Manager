@@ -47,5 +47,5 @@ jobs:
           push: true
           tags: |
             yourusername/cloudflare-dns-manager:latest
-            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository_owner }}/cloudflare-dns-manager:latest
             # docker.pkg.github.com/${{ github.repository }}/cloudflare-dns-manager:latest # Uncomment if you want to use GitHub Packages (deprecated)
