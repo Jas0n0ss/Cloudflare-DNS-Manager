@@ -2,6 +2,8 @@ export type Domain = {
 	zoneID: string;
 	name: string;
 	apiToken: string;
+	authType: 'token' | 'global';
+	email?: string | null;
 
 	// Metadata
 	createdAt?: Date;

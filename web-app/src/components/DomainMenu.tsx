@@ -35,7 +35,12 @@ export default function DomainMenu({ domain }: DomainMenuProps) {
 	const upsertDomain = useUpsertDomain();
 	const handleUpsert = async () => {
 		upsertDomain
-			.mutateAsync({ zoneID: zoneID, apiToken: apiToken })
+			.mutateAsync({ 
+				zoneID: zoneID, 
+				apiToken: apiToken,
+				authType: 'token',
+				email: null
+			})
 			.then(() => {
 				handleClose();
 				handleCloseDialog();

@@ -53,6 +53,12 @@ docker run -d \
 
 > 💾 The database will be stored in the `db` folder in your project directory by default.
 
+![image-20250521112340652](https://p.ipic.vip/hxfp60.png)
+
+![image-20250521112417017](https://p.ipic.vip/v7wbn5.png)
+
+![image-20250521112507978](https://p.ipic.vip/2dauhl.png)
+
 ---
 
 ### ⚙️ Environment Variables

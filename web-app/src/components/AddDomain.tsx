@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useSnackbar } from 'notistack';
 
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, TextField } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, TextField, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { Add, Publish } from '@mui/icons-material';
 
 import { useImportDomains, useUpsertDomain } from '../lib';
@@ -16,10 +16,15 @@ export default function AddDomain() {
 	const [zoneID, setZoneID] = React.useState('');
 	const [apiToken, setApiToken] = React.useState('');
 
+	const [importMethod, setImportMethod] = React.useState<'token' | 'global'>('token');
+	const [importEmail, setImportEmail] = React.useState('');
+	const [importApiToken, setImportApiToken] = React.useState('');
+	const [importApiKey, setImportApiKey] = React.useState('');
+
 	const upsertDomain = useUpsertDomain();
 	const handleCreate = async () => {
 		upsertDomain
-			.mutateAsync({ zoneID: zoneID, apiToken: apiToken })
+			.mutateAsync({ zoneID: zoneID, apiToken: apiToken, authType: 'token', email: null })
 			.then(() => {
 				handleClose();
 			})
@@ -31,8 +36,14 @@ export default function AddDomain() {
 
 	const importDomains = useImportDomains();
 	const handleImport = async () => {
+		let payload;
+		if (importMethod === 'token') {
+			payload = { apiToken: importApiToken };
+		} else {
+			payload = { email: importEmail, apiKey: importApiKey };
+		}
 		importDomains
-			.mutateAsync(apiToken)
+			.mutateAsync(payload)
 			.then(() => {
 				handleCloseImport();
 				handleClose();
@@ -129,11 +140,33 @@ export default function AddDomain() {
 				<DialogContent>
 					<Grid container spacing={2}>
 						<Grid item xs={12}>
-							<DialogContentText>Import all domains available to your API token.</DialogContentText>
+							<DialogContentText>Import all domains available to your API token or global API key.</DialogContentText>
 						</Grid>
 						<Grid item xs={12}>
-							<TextField fullWidth label='API Token' variant='outlined' value={apiToken} onChange={(e) => setApiToken(e.target.value)} type='password' />
+							<ToggleButtonGroup
+								value={importMethod}
+								exclusive
+								onChange={(_, value) => value && setImportMethod(value)}
+								fullWidth
+							>
+								<ToggleButton value='token'>API Token</ToggleButton>
+								<ToggleButton value='global'>Global API Key</ToggleButton>
+							</ToggleButtonGroup>
 						</Grid>
+						{importMethod === 'token' ? (
+							<Grid item xs={12}>
+								<TextField fullWidth label='API Token' variant='outlined' value={importApiToken} onChange={(e) => setImportApiToken(e.target.value)} type='password' />
+							</Grid>
+						) : (
+							<>
+								<Grid item xs={12}>
+									<TextField fullWidth label='Email' variant='outlined' value={importEmail} onChange={(e) => setImportEmail(e.target.value)} type='email' />
+								</Grid>
+								<Grid item xs={12}>
+									<TextField fullWidth label='Global API Key' variant='outlined' value={importApiKey} onChange={(e) => setImportApiKey(e.target.value)} type='password' />
+								</Grid>
+							</>
+						)}
 					</Grid>
 				</DialogContent>
 				<DialogActions>
@@ -141,7 +174,17 @@ export default function AddDomain() {
 						<Button color='inherit' onClick={handleCloseImport}>
 							Cancel
 						</Button>
-						<LoadingButton color='primary' variant='contained' onClick={handleImport} startIcon={<Publish />} loading={importDomains.isLoading} disabled={apiToken.length === 0}>
+						<LoadingButton
+							color='primary'
+							variant='contained'
+							onClick={handleImport}
+							startIcon={<Publish />}
+							loading={importDomains.isLoading}
+							disabled={
+								(importMethod === 'token' && importApiToken.length === 0) ||
+								(importMethod === 'global' && (importEmail.length === 0 || importApiKey.length === 0))
+							}
+						>
 							Import
 						</LoadingButton>
 					</Stack>
@@ -155,3 +198,4 @@ export function isValidDomain(domain: string): boolean {
 	if (!domain) return false;
 	return /^[a-zA-Z0-9][a-zA-Z0-9-_]+\.[a-zA-Z]{2,20}?$/.test(domain);
 }
+

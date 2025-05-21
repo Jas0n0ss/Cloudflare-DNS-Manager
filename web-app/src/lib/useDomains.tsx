@@ -61,8 +61,8 @@ export const useImportDomains = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation(
-		async (apiToken: string): Promise<Domain[]> => {
-			const res = await axios.post(`/api/zones/import`, { apiToken: apiToken });
+		async (payload: { apiToken?: string; email?: string; apiKey?: string }): Promise<Domain[]> => {
+			const res = await axios.post(`/api/zones/import`, payload);
 
 			return res.data as Domain[];
 		},

@@ -198,10 +198,26 @@ app.post('/api/zones', async (req, res) => {
 // import domains
 app.post('/api/zones/import', async (req, res) => {
 	try {
-		const recordRes = await axios.get(`https://api.cloudflare.com/client/v4/zones`, {
-			headers: {
+		let headers, authType, email;
+		if (req.body.apiToken) {
+			headers = {
 				Authorization: `Bearer ${req.body.apiToken}`,
-			},
+			};
+			authType = 'token';
+			email = null;
+		} else if (req.body.email && req.body.apiKey) {
+			headers = {
+				'X-Auth-Email': req.body.email,
+				'X-Auth-Key': req.body.apiKey,
+			};
+			authType = 'global';
+			email = req.body.email;
+		} else {
+			return res.status(400).send({ error: 'Missing authentication information.' });
+		}
+
+		const recordRes = await axios.get(`https://api.cloudflare.com/client/v4/zones`, {
+			headers,
 		});
 
 		var domains = [];
@@ -212,7 +228,9 @@ app.post('/api/zones/import', async (req, res) => {
 				const data = await Domains.upsert({
 					zoneID: zone.id,
 					name: zone.name,
-					apiToken: req.body.apiToken,
+					apiToken: req.body.apiToken || req.body.apiKey,
+					authType,
+					email,
 				});
 
 				domains.push(data[0]);
@@ -273,9 +291,7 @@ app.get('/api/zones/:zoneID/dns_records', async (req, res) => {
 		}
 
 		const recordRes = await axios.get(`https://api.cloudflare.com/client/v4/zones/${domain.zoneID}/dns_records`, {
-			headers: {
-				Authorization: `Bearer ${domain.apiToken}`,
-			},
+			headers: getCloudflareHeaders(domain),
 		});
 
 		res.send(recordRes.data.result);
@@ -297,9 +313,7 @@ app.post('/api/zones/:zoneID/dns_records', async (req, res) => {
 		}
 
 		const recordRes = await axios.post(`https://api.cloudflare.com/client/v4/zones/${domain.zoneID}/dns_records`, req.body, {
-			headers: {
-				Authorization: `Bearer ${domain.apiToken}`,
-			},
+			headers: getCloudflareHeaders(domain),
 		});
 
 		res.send(recordRes.data.result);
@@ -321,9 +335,7 @@ app.put('/api/zones/:zoneID/dns_records/:recordID', async (req, res) => {
 		}
 
 		const recordRes = await axios.put(`https://api.cloudflare.com/client/v4/zones/${domain.zoneID}/dns_records/${req.params.recordID}`, req.body, {
-			headers: {
-				Authorization: `Bearer ${domain.apiToken}`,
-			},
+			headers: getCloudflareHeaders(domain),
 		});
 
 		res.send(recordRes.data.result);
@@ -352,9 +364,7 @@ app.delete('/api/zones/:zoneID/dns_records/:recordID', async (req, res) => {
 		});
 
 		const recordRes = await axios.delete(`https://api.cloudflare.com/client/v4/zones/${domain.zoneID}/dns_records/${req.params.recordID}`, {
-			headers: {
-				Authorization: `Bearer ${domain.apiToken}`,
-			},
+			headers: getCloudflareHeaders(domain),
 		});
 
 		res.send(recordRes.data.result);
@@ -487,3 +497,17 @@ app.delete('/api/ddns/:id', async (req, res) => {
 app.get('*', (req, res) => {
 	res.sendFile(path.join(__dirname + '/dist/index.html'));
 });
+
+// Helper to get correct headers for a domain
+function getCloudflareHeaders(domain) {
+	if (domain.authType === 'global') {
+		return {
+			'X-Auth-Email': domain.email,
+			'X-Auth-Key': domain.apiToken,
+		};
+	} else {
+		return {
+			Authorization: `Bearer ${domain.apiToken}`,
+		};
+	}
+}

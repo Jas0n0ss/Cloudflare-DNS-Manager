@@ -7,6 +7,8 @@ export default class Domains extends Model<Domain, InferCreationAttributes<Domai
 	declare zoneID: string;
 	declare name: string;
 	declare apiToken: string;
+	declare authType: 'token' | 'global';
+	declare email: string | null;
 
 	declare createdAt: CreationOptional<Date>;
 	declare updatedAt: CreationOptional<Date>;
@@ -26,6 +28,16 @@ Domains.init(
 		apiToken: {
 			type: DataTypes.STRING,
 			allowNull: false,
+		},
+		authType: {
+			type: DataTypes.STRING,
+			allowNull: false,
+			defaultValue: 'token',
+		},
+		email: {
+			type: DataTypes.STRING,
+			allowNull: true,
+			defaultValue: null,
 		},
 
 		createdAt: DataTypes.DATE,
