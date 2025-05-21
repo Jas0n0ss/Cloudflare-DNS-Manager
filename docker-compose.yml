@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   cloudflare-dns-manager:
-    build: .
+    image: ghcr.io/jas0n0ss/cloudflare-dns-manager:latest
     container_name: cloudflare-dns-manager
     ports:
       - "8080:8080"
@@ -11,3 +11,9 @@ services:
     volumes:
       - ./db:/app/db
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

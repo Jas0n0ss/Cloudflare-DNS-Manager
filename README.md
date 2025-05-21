@@ -31,7 +31,7 @@ docker run -d \
     -p 8080:8080 \
     --name=cloudflare-dns \
     -e PUBLIC_IP_POLL_RATE_SEC=90 \
-    evantrow/cloudflare-dns:latest
+    jas0n0ss/cloudflare-dns-manager
 ```
 
 ---
